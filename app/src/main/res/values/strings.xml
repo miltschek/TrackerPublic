@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Tracker</string>
+    <string name="start_sport">Start</string>
+    <string name="stop_sport">Stop</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="stopwatch_empty">--:--</string>
+    <string name="title_stopwatch_activity">Tracker</string>
+    <string name="no_accuracy">--</string>
+    <string name="no_speed">-- km/h</string>
+    <string name="option_heart_rate">Heart Rate</string>
+    <string name="option_steps">Steps Counter</string>
+    <string name="option_geo_location">Geo Location</string>
+    <string name="option_air_pressure">Air Pressure</string>
+    <string name="option_keep_on">Display On</string>
+    <string name="option_geo_always_on">GNSS Always On</string>
+    <string name="delete_all">Delete All</string>
+    <string name="delete_all_confirmation">Delete ALL recorded files?</string>
+    <string name="files_statement">Press and hold for upload to the configured address and port (experimental).</string>
+    <string name="upload_statement">Server accepting TCP data transfer. Must be a public address (no 192.168.* or 10.*).</string>
+</resources>
