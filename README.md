@@ -56,3 +56,25 @@ To-do-List
 - Offer constant data upload during the activity
 - Analyze filters for air pressure sensor
 - Nicer "delete all" confirmation dialog
+
+TcpServer
+=========
+Essential TCP server for receiving data uploads from the app.
+Usage:
+- main class: de.miltschek.TcpServer
+- start: no arguments, bind address and port are interactively configured
+- stop: enter 'quit' at any time
+- files are written to the current directory and named data_<CURRENT_TIMESTAMP>.bin
+- limitation: single threaded
+
+TrackerDesktop
+==============
+Essential file converter for the binary data files.
+Usage:
+- main class: de.miltschek.tracker.TrackerConverter
+- start: no arguments or a single argument = path to the input file (.bin)
+- if no arguments are provided, a file selection dialog opens asking for an input file
+- output file: KML (name and location queried in the dialog)
+- output file: CSV (name and location queried in the dialog)
+- short summary is printed out in the console
+- please note: the CSV file will be generated accordingly to the current formatting locale settings of the host; depending on the language version of your Excel, it expects either a dot or a comma as a decimal separator
