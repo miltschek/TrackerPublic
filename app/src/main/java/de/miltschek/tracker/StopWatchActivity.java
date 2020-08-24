@@ -502,7 +502,7 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
                         File[] files = getFilesDir().listFiles(new FilenameFilter() {
                             @Override
                             public boolean accept(File dir, String name) {
-                                return name.endsWith(".dat");
+                                return name.endsWith(".trk");
                             }
                         });
 
