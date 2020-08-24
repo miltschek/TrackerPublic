@@ -20,7 +20,7 @@ Features
   - white: three or more satellites, position available
 
 ![Files View](Screenshots/device-2020-08-16-171227.png)
-- Data stored internally in the watch
+- Data stored internally in the watch [File format](FILE_FORMAT.md)
 - Possible to delete all files via the UI
 - Possible to send a selected file via the UI to a raw TCP socket (anything better still in development)
 - Details of each recording
