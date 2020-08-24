@@ -81,8 +81,8 @@ Id | Description | Length (bytes) | Data type | Units
 ---|-------------|----------------|-----------|------
 0xffff | End-of-file marker. | 0 | n/a | n/a
 
-#### Sensor accuracy
----------------
+# Sensor accuracy
+-----------------
 Some sensors do report the measurement accuracy. The summary values (e.g. average heart rate) are calculated on events of at least low accuracy.
 
 Value | Meaning
