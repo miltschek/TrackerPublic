@@ -8,8 +8,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import de.miltschek.tracker.BitUtility;
+
 /**
- * Simple TCP server writing any incoming data to a file.
+ * Simple TCP server writing data to a file.
+ * The data needs to be structured as:
+ * - 4 bytes: a field denoting the size of the file in bytes (big endian integer)
+ * - number of bytes as announced in the first field: the payload
+ * The server responds with a single byte '5' after getting all data.
  * Single threaded (no parallel connections possible).
  */
 public class TcpServer {
@@ -62,15 +68,36 @@ public class TcpServer {
 			byte[] buffer = new byte[1024 * 1024];
 			int read;
 			int totalRead = 0;
+			
+			// read the file size
+			read = is.read(buffer, 0, 4);
+			if (read != 4) {
+				System.err.println("Expected 4 bytes, but received only " + read + "; quitting...");
+				return;
+			}
+			
+			int fileSize = BitUtility.getInt(buffer, 0);
+			
 			while ((read = is.read(buffer)) > 0) {
 				fos.write(buffer, 0, read);
 				totalRead += read;
 				System.out.print(".");
+				
+				if (totalRead >= fileSize) {
+					break;
+				}
 			}
+			
+			// inform the client, we have all data
+			client.getOutputStream().write(5);
+			client.close();
 			
 			System.out.println();
 			System.out.println("Received " + totalRead + " Bytes.");
-			client.close();
+			
+			if (totalRead != fileSize) {
+				System.err.println("Something went wrong. We have got " + totalRead + " Bytes instead of " + fileSize + " Bytes that have been expected.");
+			}
 		}
 		
 		// close the server when out of the loop (it will be closed anyway already due to the form of the closure thread)

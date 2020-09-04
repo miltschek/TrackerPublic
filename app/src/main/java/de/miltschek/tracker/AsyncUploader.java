@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.function.Consumer;
 
 public class AsyncUploader extends AsyncTask<TransferRequest, Float, Integer> {
@@ -38,10 +39,28 @@ public class AsyncUploader extends AsyncTask<TransferRequest, Float, Integer> {
                 long totalData = 0;
                 byte[] buffer = new byte[1024 * 1024];
 
+                // send the size of the file
+                os.write(BitUtility.getBytes(fileSize), 0, 4);
+
                 while ((read = is.read(buffer)) > 0) {
                     os.write(buffer, 0, read);
                     totalData += read;
                     publishProgress(currentRequest * oneRequestValue + ((fileSize > 0) ? oneRequestValue * totalData / fileSize : 0));
+                }
+
+                os.flush();
+
+                // wait max 3 minutes for a confirmation
+                socket.setSoTimeout(3 * 60 * 1000);
+                try {
+                    read = socket.getInputStream().read();
+                    if (read == 5) {
+                        Log.i(TAG, "Successfully sent the file.");
+                    } else {
+                        Log.e(TAG, "Failed to send the file [" + read + "].");
+                    }
+                } catch (SocketTimeoutException ex) {
+                    Log.e(TAG, "Timeout while waiting for a reception confirmation.");
                 }
 
                 is.close();
@@ -49,17 +68,6 @@ public class AsyncUploader extends AsyncTask<TransferRequest, Float, Integer> {
                 socket.close();
 
                 publishProgress((currentRequest + 1) * oneRequestValue);
-
-            /*HttpURLConnection http = (HttpURLConnection)new URL("http://192.168.1.3:8080/post").openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.setFixedLengthStreamingMode(buffer.length);
-            OutputStream os = http.getOutputStream();
-            os.write(buffer);
-            os.close();
-
-            int responseCode = http.getResponseCode();
-            http.disconnect();*/
 
                 succeeded++;
             } catch (Exception ex) {
