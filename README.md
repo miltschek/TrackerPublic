@@ -37,6 +37,11 @@ Features
 - Toggle recording of: heart rate, steps, GNSS data, air pressure
 - Toggle display always-on
 
+Changes
+-------
+The file transfer protocol got changed, so you need to update both: the app and the TcpServer in order to get it working.
+The reason is a broken socket implementation on the WearOS. More here: [Weird TCP Sockets on WearOS](https://krzsztf.wordpress.com/2020/08/30/weird-tcp-sockets-on-wearos/)
+
 Known issues
 ------------
 - UI designed for round watches only
