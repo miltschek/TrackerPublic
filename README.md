@@ -51,17 +51,6 @@ Known issues
 - Air pressure sensor, similarly, gives such a noise, that is it not worth recording its data. Maybe some filter would help - need to analyze it.
 - GNSS always-on is still buggy in the implementation, that's why the switch is disabled per default.
 
-To-do-List
-----------
-- Hide graphical heart rate in case no data received.
-- Correct lifecycle management of the service in connection with the "GNSS always-on" function.
-- Keep last activity time visible after display off/on cycle.
-- Publish a .trk converter to .kml and .xlsx
-- Make better file upload
-- Offer constant data upload during the activity
-- Analyze filters for air pressure sensor
-- Nicer "delete all" confirmation dialog
-
 TcpServer
 =========
 Essential TCP server for receiving data uploads from the app.
