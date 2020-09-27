@@ -376,7 +376,6 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
 
                     heartRateData.clear();
                 }
-                mHeartRateGraph.put(100 + (int)(Math.sin((float)test++ / 20 * Math.PI) * 60));
 
                 float positionAccuracy = mSensorReadout.getGeoAccuracy();
                 int numSatellites = mSensorReadout.getBestSatellitesCount();
