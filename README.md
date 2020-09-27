@@ -37,7 +37,7 @@ Features
 - Toggle recording of: heart rate, steps, GNSS data, air pressure
 - Toggle display always-on
 
-![Chin View](Screenshots/device-2020-09-27-170915.png)
+![Chin View](Screenshots/device-2020-09-27-221000.png)
 ![Square View](Screenshots/device-2020-09-27-173821.png)
 - Adjusted graphics for displays with a chin
 - Adjusted graphics for square displays
