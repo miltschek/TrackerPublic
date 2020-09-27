@@ -324,14 +324,14 @@ public class SportActivityData {
 	    	}
 	    	
 	    	calculatedAvgAccuracy = calculatedAvgAccuracy * ((validGeoEvents - 1) / (float)validGeoEvents)
-	    			+ geoEvent.getAccuracy() / validGeoEvents;
+	    			+ geoEvent.getLateralAccuracy() / validGeoEvents;
 	    	
-	    	if (calculatedBestAccuracy > geoEvent.getAccuracy()) {
-	    		calculatedBestAccuracy = geoEvent.getAccuracy();
+	    	if (calculatedBestAccuracy > geoEvent.getLateralAccuracy()) {
+	    		calculatedBestAccuracy = geoEvent.getLateralAccuracy();
 	    	}
 	    	
-	    	if (calculatedWorstAccuracy < geoEvent.getAccuracy()) {
-	    		calculatedWorstAccuracy = geoEvent.getAccuracy();
+	    	if (calculatedWorstAccuracy < geoEvent.getLateralAccuracy()) {
+	    		calculatedWorstAccuracy = geoEvent.getLateralAccuracy();
 	    	}
     	}
     }
