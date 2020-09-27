@@ -37,6 +37,11 @@ Features
 - Toggle recording of: heart rate, steps, GNSS data, air pressure
 - Toggle display always-on
 
+![Chin View](Screenshots/device-2020-09-27-170915.png)
+![Square View](Screenshots/device-2020-09-27-173821.png)
+- Adjusted graphics for displays with a chin
+- Adjusted graphics for square displays
+
 Changes
 -------
 The file transfer protocol got changed, so you need to update both: the app and the TcpServer in order to get it working.
@@ -44,7 +49,6 @@ The reason is a broken socket implementation on the WearOS. More here: [Weird TC
 
 Known issues
 ------------
-- UI designed for round watches only
 - File upload is as minimalistic as possible at the moment. You need a TCP-socket server available on a public IP in order to get the data. Give me some time to make it better.
 - File upload works only with public IP addresses due to the routing limitations of the WearOS proxy. With enough time a companion app could solve it.
 - GNSS (GPS, Glonass, Galileo, whatever your watch does support) is, at least on my device, very inaccurate, so the calculated speed, ascent and descent is mostly to make you laugh instead of any real value.

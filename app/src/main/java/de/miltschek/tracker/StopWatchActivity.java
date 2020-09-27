@@ -365,6 +365,7 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
     private Collection<HeartRateSensorData> heartRateData = new ArrayList<>();
 
     private final Runnable mDataForwarderTask = new Runnable() {
+        int test = 0;
         @Override
         public void run() {
             if (StopWatchActivity.this.mSensorReadout != null) {
@@ -375,6 +376,7 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
 
                     heartRateData.clear();
                 }
+                mHeartRateGraph.put(100 + (int)(Math.sin((float)test++ / 20 * Math.PI) * 60));
 
                 float positionAccuracy = mSensorReadout.getGeoAccuracy();
                 int numSatellites = mSensorReadout.getBestSatellitesCount();
@@ -516,10 +518,17 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
     }
 
     private void onStartSport(View view) {
+        Log.d(TAG, "onStartStop; checking permissions");
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.BODY_SENSORS, Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-            mStartStopButton.setChecked(false);
+            Log.d(TAG, "onStartStop; requesting permissions");
+            try {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BODY_SENSORS, Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                mStartStopButton.setChecked(false);
+            } catch (Exception ex) {
+                Log.e(TAG, "onStartStop; exception at requesting permissions " + ex.getClass().getSimpleName() + " " + ex.getMessage());
+            }
+            Log.d(TAG, "onStartStop; returning");
             return;
         }
 
