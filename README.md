@@ -42,6 +42,23 @@ Features
 - Adjusted graphics for displays with a chin
 - Adjusted graphics for square displays
 
+Installation
+------------
+1. A compiled version of the WearOS app<br/>
+The app is available as Google Play open beta-testing. Please note, it is a little behind of the GitHub status as it takes time until a new version gets accepted.<br/>
+https://play.google.com/apps/testing/de.miltschek.tracker
+
+1. A compiled version of the supporting apps<br/>
+The TcpServer and the TrackerDesktop (see below) will be available as compiled versions soon.
+
+1. Do it by your own
+    1. Download or clone the project from GitHub
+    1. Open the project in [Android Studio](https://developer.android.com/studio)
+    1. [Enable debugging on your watch](https://developer.android.com/training/wearables/apps/debugging#enable-dev-options)
+    1. Connect the watch to your PC (common approach is [debugging via Bluetooth](https://developer.android.com/training/wearables/apps/debugging#usb-debugging)).
+    1. The watch should be recognized by the Android Studio. Launch the app on the watch.
+    1. Alternatively you can download a pre-compiled APK from GitHub (see: releases) and use the adb to install the app on the watch without having to compile it by your own (adb -s *android_serial* install myapp.apk). To get the serial id of the watch, print the list of devices by typing "adb devices".
+
 Changes
 -------
 The file transfer protocol got changed, so you need to update both: the app and the TcpServer in order to get it working.
