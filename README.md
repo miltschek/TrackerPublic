@@ -19,9 +19,18 @@ Features
   - yellow: three satellites (no position available)
   - white: three or more satellites, position available
 
-![Files View](Screenshots/device-2020-08-16-171227.png)
+![Slack Integration](Screenshots/Screenshot_20201115-215123_Slack.jpg)
+- Sport activity events can be transmitted to a selected Slack channel
+- The beginning and the end of a sport activity are announced
+- Every 30 seconds a short summary is reported
+  - Total amount of steps as reported by the sensor
+  - Average speed if available (required GNSS signal)
+  - Current heart rate
+  - Current location (number of tracked satellites, GMaps-link, latitude, longitude and lateral accuracy)
+
+![Files View](Screenshots/device-2020-11-15-193937.png)
 - Data stored internally in the watch [File format](FILE_FORMAT.md)
-- Possible to delete all files via the UI
+- Possible to delete all or individual files via the UI
 - Possible to send a selected file via the UI to a raw TCP socket (anything better still in development)
 - Details of each recording
   - Date/time of the beginning of the activity
@@ -29,11 +38,16 @@ Features
   - File size in kB
   - Average and maximum heart rate (bpm)
   - Total steps and average steps per minute
-  - GNSS-based data: average speed, total ascent and total descent
+  - GNSS-based data: average speed
+  - Total ascent and descent have been removed as they introduced only confusion
 
 ![Settings View](Screenshots/device-2020-08-16-171256.png)
 - Configurable address and port for receiving files
   - Please note, private addresses (e.g. in your home network) will not work
+- NEW Toggle reporting to a slack channel
+  - Enter a slack authentication token (xoxb-...)
+  - Enter a slack channel name (with the leading #)
+  - Turn on reporting: a successful comminucation will be immerdiatelly confirmed
 - Toggle recording of: heart rate, steps, GNSS data, air pressure
 - Toggle display always-on
 
@@ -61,8 +75,12 @@ The TcpServer and the TrackerDesktop (see below) will be available as compiled v
 
 Changes
 -------
-The file transfer protocol got changed, so you need to update both: the app and the TcpServer in order to get it working.
-The reason is a broken socket implementation on the WearOS. More here: [Weird TCP Sockets on WearOS](https://krzsztf.wordpress.com/2020/08/30/weird-tcp-sockets-on-wearos/)
+- Integration with Slack has been added.
+- Total ascent and descent have been removed from the summary.
+- Confirmation dialogs are nicer now.
+- Individual files can be deleted.
+- Files are sorted from the newest one to the oldest one.
+- The file transfer protocol got changed, so you need to update both: the app and the TcpServer in order to get it working. The reason is a broken socket implementation on the WearOS. More here: [Weird TCP Sockets on WearOS](https://krzsztf.wordpress.com/2020/08/30/weird-tcp-sockets-on-wearos/)
 
 Known issues
 ------------
