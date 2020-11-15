@@ -1,3 +1,26 @@
+/*
+ *  MIT License
+ *
+ *  Copyright (c) 2020 miltschek
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 package de.miltschek.tracker;
 
 import android.app.Service;
@@ -19,6 +42,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Background service orchestrating sensor data acquisition during sport events.
+ * TODO The architecture of this class and supporting classes (listeners and data events)
+ * should be refactored in order to optimize the amount of data stored and pushed
+ * and to make the states easier to control (e.g. use GNSS independently of an active
+ * sport activity).
+ */
 public class SensorCollector extends Service implements ISensorReadout, ISensorConsumer {
     private static final String TAG = SensorCollector.class.getSimpleName();
 
@@ -48,10 +78,16 @@ public class SensorCollector extends Service implements ISensorReadout, ISensorC
     private StepCounterSensorData lastStepCounterData;
     private GeoLocationData lastGeoLocationData;
 
+    /**
+     * Creates the collector.
+     */
     public SensorCollector() {
         Log.d(TAG, "Creating a new instance " + hashCode());
     }
 
+    /**
+     * Connector to the service.
+     */
     public class LocalBinder extends Binder {
         ISensorReadout getService() {
             return SensorCollector.this;

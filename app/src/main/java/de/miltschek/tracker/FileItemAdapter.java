@@ -40,25 +40,34 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
+/**
+ * Holds file items details for a list view.
+ */
 public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHolder> {
     private static final String TAG = FileItemAdapter.class.getSimpleName();
 
+    /** Tag identifier for storing file path. */
     private static final int TAG_FILE_ID = 0x12345678;
 
     private List<FileItem> mFileItems = new ArrayList<>();
     private SimpleDateFormat sdfDate = new SimpleDateFormat("dd. MMM yyyy", Locale.getDefault()),
         sdfTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private RequestListener requestListener;
+    private Consumer<String> requestListener;
 
-    public static interface RequestListener {
-        void onRequest(String fileName);
-    }
-
-    public void setRequestListener(RequestListener requestListener) {
+    /**
+     * Sets a handler called whenever a user requests an action on a specific file.
+     * @param requestListener handler receiving a full file path when requested
+     */
+    public void setRequestListener(Consumer<String> requestListener) {
         this.requestListener = requestListener;
     }
 
+    /**
+     * Sets the contents of the file list to the files given and notifies the view if any.
+     * @param files files to be shown in the list.
+     */
     public void setFiles(File ... files) {
         mFileItems.clear();
 
@@ -111,10 +120,18 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         return mFileItems.size();
     }
 
+    /**
+     * An individual file entry position.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
+        private final String TAG = ViewHolder.class.getSimpleName();
         private View mRootLayout;
         private TextView mTextFirstLine, mTextSecondLine, mTextThirdLine, mTextFourthLine;
 
+        /**
+         * Creates the file entry view.
+         * @param itemView parent view.
+         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mRootLayout = itemView.findViewById(R.id.rootLayout);
@@ -123,23 +140,25 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
             mTextThirdLine = itemView.findViewById(R.id.textThirdLine);
             mTextFourthLine = itemView.findViewById(R.id.textFourthLine);
 
+            // short click - currently do nothing
             mRootLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("milt", "On click " + mRootLayout.getTag(TAG_FILE_ID));
+                    Log.i(TAG, "On click " + mRootLayout.getTag(TAG_FILE_ID));
                 }
             });
 
+            // long click - call the listener
             mRootLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     Object tag = mRootLayout.getTag(TAG_FILE_ID);
 
-                    Log.i("milt", "Long click " + tag);
+                    Log.i(TAG, "Long click " + tag);
 
                     if (tag != null) {
                         if (requestListener != null) {
-                            requestListener.onRequest(tag.toString());
+                            requestListener.accept(tag.toString());
                         }
                     }
 

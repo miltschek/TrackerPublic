@@ -39,11 +39,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Asynchronous writer of sport activity data to a file.
+ */
 public class AsyncSaver extends AsyncTask<ISensorReadout, Float, Integer> {
     private static final String TAG = AsyncSaver.class.getSimpleName();
     private final Consumer<Integer> finishedCallback;
     private final File targetDirectory;
 
+    /**
+     * Creates an asynchronous writer.
+     * @param finishedCallback called after all data has been written,
+     *                        the argument contains a number of successfully written files
+     * @param targetDirectory directory for sport activity recordings storage
+     */
     public AsyncSaver(Consumer<Integer> finishedCallback, File targetDirectory) {
         this.finishedCallback = finishedCallback;
         this.targetDirectory = targetDirectory;

@@ -1,3 +1,26 @@
+/*
+ *  MIT License
+ *
+ *  Copyright (c) 2020 miltschek
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 package de.miltschek.tracker;
 
 import android.location.GnssStatus;
@@ -6,9 +29,13 @@ import android.util.Log;
 
 import java.util.Arrays;
 
+/**
+ * Listener of GNSS status events.
+ */
 public class GnssStatusCallback extends GnssStatus.Callback {
     private static final String TAG = GnssStatusCallback.class.getSimpleName();
 
+    /** Maximum age of a location event to treat it as valid. */
     private static final long MAX_STATUS_AGE_MS = 10L * 1000;
 
     private long numSatellitesTimestamp;
@@ -18,6 +45,11 @@ public class GnssStatusCallback extends GnssStatus.Callback {
         return numSatellitesUsed[constellation];
     }
 
+    /**
+     * Gets the amount of satellites of the constellation that has the most satellites
+     * being received.
+     * @return the amount of tracked satellites of the best constellation at the moment
+     */
     public int getBestSatellitesCount() {
         int max = 0;
 
@@ -49,71 +81,5 @@ public class GnssStatusCallback extends GnssStatus.Callback {
             numSatellitesUsed[n] = localNumSatellitesUsed[n];
         }
         Log.d(TAG, "Num satellites used " + Arrays.toString(localNumSatellitesUsed));
-
-                /*StringBuilder sb = new StringBuilder();
-
-                int numGps = 0, numGlonass = 0, numBeidou = 0, numOthers = 0,
-                    numGpsUsed = 0, numGlonassUsed = 0, numBeidouUsed = 0, numOthersUsed = 0;
-
-                float avgSnrGps = 0, avgSnrGlonass = 0, avgSnrBeidou = 0;*/
-
-        /*int numSatellitesUsed = 0;
-
-        for (int n = status.getSatelliteCount() - 1; n >= 0; n--) {
-            if (status.usedInFix(n)) {
-                numSatellitesUsed++;
-            }
-
-                    /*boolean used = status.usedInFix(n);
-                    float snr = status.getCn0DbHz(n);
-
-                    switch (status.getConstellationType(n)) {
-                        case GnssStatus.CONSTELLATION_GPS:
-                            numGps++;
-                            if (used) {
-                                avgSnrGps = (float)numGpsUsed / (numGpsUsed + 1) * avgSnrGps + (float)snr / (numGpsUsed + 1);
-                                numGpsUsed++;
-                            }
-                            break;
-
-                        case GnssStatus.CONSTELLATION_GLONASS:
-                            numGlonass++;
-                            if (used) {
-                                avgSnrGlonass = (float)numGlonassUsed / (numGlonassUsed + 1) * avgSnrGlonass + (float)snr / (numGlonassUsed + 1);
-                                numGlonassUsed++;
-                            }
-                            break;
-
-                        case GnssStatus.CONSTELLATION_BEIDOU:
-                            numBeidou++;
-                            if (used) {
-                                avgSnrBeidou = (float)numBeidouUsed / (numBeidouUsed + 1) * avgSnrBeidou + (float)snr / (numBeidouUsed + 1);
-                                numBeidouUsed++;
-                            }
-                            break;
-
-                        default:
-                            numOthers++;
-                            if (used) numOthersUsed++;
-                    }
-
-                    //sb.append(status.getSvid(n));
-                    //sb.append(status.usedInFix(n));
-                    //sb.append(status.hasAlmanacData(n));
-                    //sb.append(status.hasEphemerisData(n));
-                    //sb.append(status.getAzimuthDegrees(n));
-                    //sb.append(status.getElevationDegrees(n));
-                    //sb.append(status.getCn0DbHz(n));
-                    //status.getCarrierFrequencyHz(n);
-                    //status.hasCarrierFrequencyHz(n);
-                    //sb.append("; ");*/
-        //}
-
-                /*Log.i("milt/GNSS", "GPS " + numGpsUsed + "/" + numGps + " ~" + avgSnrGps
-                        + " GLONASS " + numGlonassUsed + "/" + numGlonass + " ~" + avgSnrGlonass
-                        + " BEIDOU " + numBeidouUsed + "/" + numBeidou + " ~" + avgSnrBeidou
-                        + " OTH " + numOthersUsed + "/" + numOthers);*/
-
-        //mGnssAccuracy = numSatellitesUsed;
     }
 }

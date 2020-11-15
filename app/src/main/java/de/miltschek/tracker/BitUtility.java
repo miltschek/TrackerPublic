@@ -26,11 +26,26 @@ package de.miltschek.tracker;
 
 import java.nio.charset.StandardCharsets;
 
-public class BitUtility {
+/**
+ * Utility class providing data conversions from and to their binary representation.
+ */
+public final class BitUtility {
+    private BitUtility() {}
+
+    /**
+     * Gets a binary representation of a string in US-ASCII encoding.
+     * @param value string to be converted
+     * @return binary representation as a byte array
+     */
     public static byte[] getBytes(String value) {
         return value.getBytes(StandardCharsets.US_ASCII);
     }
 
+    /**
+     * Gets a binary representation of a short integer (16 bits) according to the big-endian format.
+     * @param value value to be converted
+     * @return binary representation as a byte array
+     */
     public static byte[] getBytes(short value) {
         return new byte[] {
                 (byte)(value >>> 8),
@@ -38,6 +53,11 @@ public class BitUtility {
         };
     }
 
+    /**
+     * Gets a binary representation of an integer (32 bits) according to the big-endian format.
+     * @param value value to be converted
+     * @return binary representation as a byte array
+     */
     public static byte[] getBytes(int value) {
         return new byte[] {
                 (byte)(value >>> 24),
@@ -47,6 +67,11 @@ public class BitUtility {
         };
     }
 
+    /**
+     * Gets a binary representation of a long integer (64 bits) according to the big-endian format.
+     * @param value value to be converted
+     * @return binary representation as a byte array
+     */
     public static byte[] getBytes(long value) {
         return new byte[] {
                 (byte)(value >>> 56),
@@ -60,14 +85,30 @@ public class BitUtility {
         };
     }
 
+    /**
+     * Gets a binary representation of a float value (32 bits) according to the IEEE 754 standard.
+     * @param value value to be converted
+     * @return binary representation as a byte array
+     */
     public static byte[] getBytes(float value) {
         return getBytes(Float.floatToRawIntBits(value));
     }
 
+    /**
+     * Gets a binary representation of a double value (64 bits) according to the IEEE 754 standard.
+     * @param value value to be converted
+     * @return binary representation as a byte array
+     */
     public static byte[] getBytes(double value) {
         return getBytes(Double.doubleToRawLongBits(value));
     }
 
+    /**
+     * Converts a big-endian binary representation of an integer (32 bits) to a value.
+     * @param buffer buffer containing the binary representation
+     * @param offset starting offset of the valid data
+     * @return converted value
+     */
     public static int getInt(byte[] buffer, int offset) {
         return (0xff & buffer[offset]) << 24
                 | (0xff & buffer[offset + 1]) << 16
@@ -75,11 +116,23 @@ public class BitUtility {
                 | (0xff & buffer[offset + 3]);
     }
 
+    /**
+     * Converts a big-endian binary representation of a short integer (16 bits) to a value.
+     * @param buffer buffer buffer containing the binary representation
+     * @param offset starting offset of the valid data
+     * @return converted value
+     */
     public static short getShort(byte[] buffer, int offset) {
         return (short)((0xff & buffer[offset]) << 8
                 | (0xff & buffer[offset + 1]));
     }
 
+    /**
+     * Converts a big-endian binary representation of a long integer (64 bits) to a value.
+     * @param buffer buffer buffer containing the binary representation
+     * @param offset starting offset of the valid data
+     * @return converted value
+     */
     public static long getLong(byte[] buffer, int offset) {
         return (long)(0xff & buffer[offset]) << 56
                 | (long)(0xff & buffer[offset + 1]) << 48
@@ -91,7 +144,23 @@ public class BitUtility {
                 | (long)(0xff & buffer[offset + 7]);
     }
 
+    /**
+     * Converts an IEEE 754 binary representation of a float (32 bits) to a value.
+     * @param buffer buffer buffer containing the binary representation
+     * @param offset starting offset of the valid data
+     * @return converted value
+     */
     public static float getFloat(byte[] buffer, int offset) {
         return Float.intBitsToFloat(getInt(buffer, offset));
+    }
+
+    /**
+     * Converts an IEEE 754 binary representation of a double (64 bits) to a value.
+     * @param buffer buffer buffer containing the binary representation
+     * @param offset starting offset of the valid data
+     * @return converted value
+     */
+    public static double getDouble(byte[] buffer, int offset) {
+        return Double.longBitsToDouble(getLong(buffer, offset));
     }
 }

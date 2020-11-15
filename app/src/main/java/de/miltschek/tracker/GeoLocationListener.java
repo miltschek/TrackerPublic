@@ -29,6 +29,9 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 
+/**
+ * Listener of geographical events.
+ */
 public class GeoLocationListener implements LocationListener {
     private static final String TAG = GeoLocationListener.class.getSimpleName();
     /** Maximum allowed age for the average speed and position accuracy reports, 10s. */
@@ -39,6 +42,10 @@ public class GeoLocationListener implements LocationListener {
     private long lastPositionTimestamp;
     private float lastPositionAccuracy;
 
+    /**
+     * Creates the listener.
+     * @param consumer central receiver of sensor events.
+     */
     public GeoLocationListener(ISensorConsumer consumer) {
         this.consumer = consumer;
     }

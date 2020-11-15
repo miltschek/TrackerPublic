@@ -1,3 +1,26 @@
+/*
+ *  MIT License
+ *
+ *  Copyright (c) 2020 miltschek
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *  SOFTWARE.
+ */
 package de.miltschek.tracker;
 
 import android.content.Context;
@@ -15,12 +38,20 @@ import androidx.core.graphics.ColorUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Two-dimensional graph.
+ */
 public class XYGraphView extends View {
 
     private Paint paint, greenPaint, redPaint;
     private int w, h;
     private List<XYData> xyDataCollection = new ArrayList<>();
 
+    /**
+     * Creates the two-dimensional graph.
+     * @param context application context.
+     * @param attrs attributes for creation of the view.
+     */
     public XYGraphView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
@@ -40,19 +71,23 @@ public class XYGraphView extends View {
         setMinimumHeight(70);
     }
 
+    /**
+     * Creates a new data set that is to be displayed with the specified color
+     * and of the specified maximum value (used for proportional scaling).
+     * @param color color value.
+     * @param maxValue maximal value for the y-axis.
+     * @return descriptor of the data set.
+     */
     public XYData addDataSet(int color, float maxValue) {
         XYData xyData = new XYData(200, color, maxValue);
 
         xyDataCollection.add(xyData);
-        return  xyData;
+        return xyData;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //Log.i("milt/XY", "onDraw");
-
-        //canvas.drawRect(0, 0,w - 1, h - 1, paint);
         final int scale = 6;
         final int xSpace = w / scale;
 
@@ -98,9 +133,6 @@ public class XYGraphView extends View {
 
                 String header = String.valueOf(xyData.lastValue);
                 Rect boundsHeader = new Rect(), boundsSubtitle = new Rect();
-                /*xyData.paintHeader.getTextBounds(header, 0, header.length(), boundsHeader);
-                canvas.drawText(header, 2, -boundsHeader.top + 2, xyData.paintHeaderBlend);
-                canvas.drawText(header, 0, -boundsHeader.top, xyData.paintHeader);*/
 
                 String subtitle = String.format("Ø %.0f", xyData.avgValue);
                 xyData.paintSubtitle.getTextBounds(subtitle, 0, subtitle.length(), boundsSubtitle);
@@ -108,12 +140,6 @@ public class XYGraphView extends View {
                 canvas.drawText(subtitle, 0, /*boundsHeader.height() - */-boundsSubtitle.top + 3, xyData.paintSubtitle);
             }
         }
-
-        /*for (int n = 1; n < values.length; n++) {
-            canvas.drawLine(n - 1, values[n - 1], n, values[n], paint);
-        }*/
-        //canvas.drawLine(0, 0, this.w / 2, this.h, this.paint);
-        //canvas.drawOval(0, 0, this.w, this.h, paint);
     }
 
     @Override
@@ -129,6 +155,9 @@ public class XYGraphView extends View {
         }
     }
 
+    /**
+     * Descriptor of a data set.
+     */
     public class XYData {
         private int startIndex, stopIndex;
         private float maxValue;
@@ -141,6 +170,12 @@ public class XYGraphView extends View {
         private final Paint paint, paintHeader, paintSubtitle, paintHeaderBlend, paintSubtitleBlend;
         private Paint[] markerPaints = new Paint[0];
 
+        /**
+         * Creates a descriptor.
+         * @param size buffer size for historical data.
+         * @param color color of the data set (32bit argb value).
+         * @param maxValue maximum value.
+         */
         public XYData(int size, int color, float maxValue) {
             this.valuesNormalized = new float[size];
             this.paint = new Paint();
@@ -164,6 +199,11 @@ public class XYGraphView extends View {
             this.maxValue = maxValue;
         }
 
+        /**
+         * Creates a new horizontal marker on a specified value level.
+         * @param value value to be marked across the whole graph.
+         * @param color color to be used for the marker (32bit argb value).
+         */
         public void addMarker(int value, int color) {
             float[] oldMarkers = markers;
             markers = new float[markers.length + 1];
@@ -182,6 +222,9 @@ public class XYGraphView extends View {
             }
         }
 
+        /**
+         * Clears all stored data.
+         */
         public void clear() {
             startIndex = 0;
             stopIndex = 0;
@@ -191,10 +234,18 @@ public class XYGraphView extends View {
             XYGraphView.this.invalidate();
         }
 
+        /**
+         * Gets the amount of stored values.
+         * @return amount of stored values.
+         */
         public int size() {
             return stopIndex - startIndex + ((stopIndex < startIndex) ? valuesNormalized.length : 0);
         }
 
+        /**
+         * Puts a new value on top of the history buffer.
+         * @param value value to be stored.
+         */
         public void put(int value) {
             stopIndex++;
             // empty vector is a special case: stopIndex becomes 0
@@ -221,10 +272,18 @@ public class XYGraphView extends View {
             XYGraphView.this.invalidate();
         }
 
+        /**
+         * Gets an average value out of all stored historical values.
+         * @return an average value out of all stored historical values.
+         */
         public float getAvgValue() {
             return avgValue;
         }
 
+        /**
+         * Gets the latest value that has been added.
+         * @return the latest value that has been added.
+         */
         public int getLastValue() {
             return lastValue;
         }

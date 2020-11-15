@@ -33,6 +33,9 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+/**
+ * Colorful strips around a display for a graphical presentation of a value.
+ */
 public class MeterView extends View {
     private static final String TAG = MeterView.class.getSimpleName();
     /** The width of a segment, or rather of the segments' ring in pixels. */
@@ -69,6 +72,11 @@ public class MeterView extends View {
     /** The angles of the intersection points of the inner circle and the segments shifted by the chin. */
     private float chinAngle1, chinAngle2;
 
+    /**
+     * Creates the meter view.
+     * @param context application context.
+     * @param attrs attributes for creation of the view.
+     */
     public MeterView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
@@ -79,6 +87,10 @@ public class MeterView extends View {
         setSegments(40);
     }
 
+    /**
+     * Configures the view for a specified number of segments.
+     * @param totalSegments number of all segments.
+     */
     public final void setSegments(int totalSegments) {
         this.totalSegments = totalSegments;
 
@@ -90,6 +102,12 @@ public class MeterView extends View {
         invalidate();
     }
 
+    /**
+     * Presents a value that is a fraction of segments to be displayed (0..1).
+     * @param value a value to be displayed (0 = no segments, ..., 1 = all segments).
+     *              a value greater than 1 is treated as 1.
+     *              a value less than 0 is treated as 0.
+     */
     public void setValue(float value) {
         this.value = value;
         invalidate();

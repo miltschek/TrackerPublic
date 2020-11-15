@@ -32,29 +32,118 @@ public interface ISensorReadout {
     /** Maximum age of a heart rate value to be considered as valid, 10s. */
     long MAX_HEART_RATE_AGE_NS = 10L * 1000 * 1000 * 1000;
 
+    /**
+     * Sets whether a geographical location sensor (GNSS) is to be always active
+     * or only during a sport event.
+     * @param state true to activate the location server forever,
+     *              false to activate it only during sport events
+     */
     void setGeoLocationAlwaysActive(boolean state);
+
+    /**
+     * Starts a sport activity (measuring the time, collecting sensor data).
+     * @param heartRate true if heart rate data shall be collected, false otherwise
+     * @param stepCount true if step count data shall be collected, false otherwise
+     * @param airPressure true if air pressure data shall be collected, false otherwise
+     * @param geoLocation true if geographical location data shall be collected, false otherwise
+     */
     void startSportActivity(boolean heartRate, boolean stepCount, boolean airPressure, boolean geoLocation);
+
+    /**
+     * Stops a sport activity (measuring the time, collecting sensor data).
+     */
     void stopSportActivity();
+
+    /**
+     * Returns the duration of the sport activity based on the abstract timestamps in nanoseconds.
+     * @return duration of the sport activity in nanoseconds.
+     */
     long getSportActivityDurationNs();
+
+    /**
+     * Returns the real time clock timestamp of the beginning of the sport activity.
+     * @return timestamp of the beginning of the sport activity in milliseconds since Jan, 1st 1970 UTC.
+     */
     long getSportActivityStartTimeRtc();
+
+    /**
+     * Returns the real time clock timestamp of the end of the sport activity.
+     * @return timestamp of the end of the sport activity in milliseconds since Jan, 1st 1970 UTC.
+     */
     long getSportActivityStopTimeRtc();
+
+    /**
+     * Returns the abstract timestamp of the beginning of the sport activity.
+     * @return timestamp of the beginning of the sport activity in nanoseconds since some abstract point in time.
+     */
     long getSportActivityStartTimeNs();
+
+    /**
+     * Returns the abstract timestamp of the end of the sport activity.
+     * @return timestamp of the end of the sport activity in nanoseconds since some abstract point in time.
+     */
     long getSportActivityStopTimeNs();
+
+    /**
+     * Gets a value indicating whether the sport activity is running (is active).
+     * @return true if the sport activity is running, false otherwise.
+     */
     boolean isSportActivityRunning();
+
+    /**
+     * Resets all data of the last sport activity, if any (timestamps, sensor data).
+     */
     void resetSportActivity();
 
+    /**
+     * Registers a receiver of sensor data of a specified type.
+     * @param clazz type of sensor data to be pushed.
+     * @param dataListener receiver of the sensor data.
+     * @param <T> type of sensor data to be pushed.
+     */
     <T extends SensorData> void registerDataListener(T[] clazz, IDataListener<T> dataListener);
-    /*List<? extends HeartRateSensorData> getHeartRateData(int startFromIndex);
-    List<? extends StepCounterSensorData> getStepData(int startFromIndex);
-    List<? extends GeoLocationData> getGeoLocationData(int startFromIndex);
-    List<? extends PressureSensorData> getAirPressureData(int startFromIndex);*/
+
+    /**
+     * Gets all collected heart rate data events.
+     * @return all collected heart rate data events.
+     */
     List<? extends HeartRateSensorData> getHeartRateData();
+
+    /**
+     * Gets all collected step count data events.
+     * @return all collected step count data events.
+     */
     List<? extends StepCounterSensorData> getStepData();
+
+    /**
+     * Gets all collected geographical location data events.
+     * @return all collected geographical location data events.
+     */
     List<? extends GeoLocationData> getGeoLocationData();
+
+    /**
+     * Gets all collected air pressure data events.
+     * @return all collected air pressure data events.
+     */
     List<? extends PressureSensorData> getAirPressureData();
 
+    /**
+     * Gets an average speed if available or 0 otherwise.
+     * @return average speed in meters per seconds.
+     */
     float getAvgSpeed();
+
+    /**
+     * Gets the current geographical lateral location accuracy or NaN if not available.
+     * @return current geographical lateral location accuracy in meters.
+     */
     float getGeoAccuracy();
+
+    /**
+     * Gets the amount of satellites of the constellation that has the most satellites
+     * being received.
+     * @return the amount of tracked satellites of the best constellation at the moment
+     */
     int getBestSatellitesCount();
 
     /**

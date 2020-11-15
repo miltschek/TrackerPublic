@@ -401,9 +401,9 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
             }
         });
 
-        mFileItemAdapter.setRequestListener(new FileItemAdapter.RequestListener() {
+        mFileItemAdapter.setRequestListener(new Consumer<String>() {
             @Override
-            public void onRequest(String fileName) {
+            public void accept(String fileName) {
                 mFileActionDialog.show(fileName);
             }
         });
