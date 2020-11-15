@@ -103,7 +103,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
 
         holder.mTextThirdLine.setText("❤ Φ " + String.format("%.0f bpm ↑ %d bpm", fileItem.getAvgHeartRate(), fileItem.getMaxHeartRate()));
         holder.mTextFourthLine.setText("\uD83D\uDC63 Σ " + String.format("%d Φ %.0f/min", fileItem.getTotalSteps(), fileItem.getAvgStepRate()) + "\n"
-            + "\uD83D\uDE80 Φ " + String.format("%.1f", fileItem.getAvgSpeed() * 3.6f) + "km/h ↑ " + String.format("%.0f", fileItem.getTotalAscent()) + " m ↓ " + String.format("%.0f", fileItem.getTotalDescent()) + " m");
+            + "\uD83D\uDE80 Φ " + String.format("%.1f", fileItem.getAvgSpeed() * 3.6f) + "km/h");
     }
 
     @Override

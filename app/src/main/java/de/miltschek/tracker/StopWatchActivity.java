@@ -73,8 +73,12 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -113,6 +117,8 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
     private View mFilesView;
     private RecyclerView mFileList;
     private FileItemAdapter mFileItemAdapter;
+    private DeleteAllFileConfirmationDialog mDeleteAllView;
+    private FileActionDialog mFileActionDialog;
 
     private ImageView mGeoAvailabilityImageView;
 
@@ -235,6 +241,53 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
         mFileList.setAdapter(mFileItemAdapter);
         mFileList.setLayoutManager(new LinearLayoutManager(this));
 
+        mDeleteAllView = new DeleteAllFileConfirmationDialog(this);
+        mDeleteAllView.setDeleteAction(new Runnable() {
+            @Override
+            public void run() {
+                Log.w(TAG, "Deleting all recorded sport activities!");
+
+                File[] files = getFilesDir().listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(".trk");
+                    }
+                });
+
+                for (File file : files) {
+                    file.delete();
+                }
+
+                updateFileList();
+            }
+        });
+
+        mFileActionDialog = new FileActionDialog(this);
+        mFileActionDialog.setSendAction(new Consumer<String>() {
+            @Override
+            public void accept(String fileName) {
+                try {
+                    new AsyncUploader(new Consumer<Integer>() {
+                        @Override
+                        public void accept(Integer integer) {
+                            Toast.makeText(StopWatchActivity.this, integer + " file(s) uploaded.", Toast.LENGTH_SHORT).show();
+                        }
+                    }).execute(new TransferRequest(mAddress.getText().toString(), Integer.parseInt(mPort.getText().toString()), fileName));
+                } catch (Exception ex) {
+                    Toast.makeText(StopWatchActivity.this, "Not possible.", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Failed to upload a file " + fileName + " due to " + ex.getClass().getSimpleName() + " " + ex.getMessage());
+                }
+            }
+        });
+        mFileActionDialog.setDeleteAction(new Consumer<String>() {
+            @Override
+            public void accept(String fileName) {
+                File fileToDelete = new File(fileName);
+                fileToDelete.delete();
+                updateFileList();
+            }
+        });
+
         mSwitchDisplayOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -266,18 +319,7 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
         mFileItemAdapter.setRequestListener(new FileItemAdapter.RequestListener() {
             @Override
             public void onRequest(String fileName) {
-                // todo send the file to a configured address/port
-                try {
-                    new AsyncUploader(new Consumer<Integer>() {
-                        @Override
-                        public void accept(Integer integer) {
-                            Toast.makeText(StopWatchActivity.this, integer + " file(s) uploaded.", Toast.LENGTH_SHORT).show();
-                        }
-                    }).execute(new TransferRequest(mAddress.getText().toString(), Integer.parseInt(mPort.getText().toString()), fileName));
-                } catch (Exception ex) {
-                    Toast.makeText(StopWatchActivity.this, "Not possible.", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "Failed to upload a file " + fileName + " due to " + ex.getClass().getSimpleName() + " " + ex.getMessage());
-                }
+                mFileActionDialog.show(fileName);
             }
         });
 
@@ -493,27 +535,7 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
      * @param view the view
      */
     public void onDeleteAll(View view) {
-        // 'compat' due to a target API below 29
-        new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.Theme_AppCompat_Dialog))
-                .setTitle(R.string.delete_all)
-                .setMessage(R.string.delete_all_confirmation)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        File[] files = getFilesDir().listFiles(new FilenameFilter() {
-                            @Override
-                            public boolean accept(File dir, String name) {
-                                return name.endsWith(".trk");
-                            }
-                        });
-
-                        for (File file : files) {
-                            file.delete();
-                        }
-
-                        updateFileList();
-                    }})
-                .setNegativeButton(android.R.string.no, null).show();
+        mDeleteAllView.show();
     }
 
     private void onStartSport(View view) {
@@ -576,6 +598,15 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
                 return name.endsWith(".trk");
             }
         });
+
+        // the latest on top
+        Arrays.sort(files,
+                new Comparator<File>() {
+                    @Override
+                    public int compare(File o1, File o2) {
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                });
 
         mFileItemAdapter.setFiles(files);
         Log.d(TAG, "files refreshed " + files.length);

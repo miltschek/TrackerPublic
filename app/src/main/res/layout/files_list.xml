@@ -18,6 +18,7 @@
                 android:id="@+id/button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_red"
                 android:onClick="onDeleteAll"
                 android:text="@string/delete_all" />
 
@@ -25,8 +26,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/files_statement"
-                android:textSize="10sp" />
+                android:text="@string/files_statement" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/items"

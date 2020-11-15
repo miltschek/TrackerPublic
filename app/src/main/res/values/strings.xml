@@ -19,6 +19,11 @@
     <string name="option_geo_always_on">GNSS Always On</string>
     <string name="delete_all">Delete All</string>
     <string name="delete_all_confirmation">Delete ALL recorded files?</string>
-    <string name="files_statement">Press and hold for upload to the configured address and port (experimental).</string>
+    <string name="files_statement">Press and hold selected recording:</string>
     <string name="upload_statement">Server accepting TCP data transfer. Must be a public address (no 192.168.* or 10.*).</string>
+    <string name="delete_all_files">Are you sure to delete all files?</string>
+    <string name="option_delete_all">Yes, delete all</string>
+    <string name="option_cancel">Cancel</string>
+    <string name="option_send_file">Send file</string>
+    <string name="option_delete_file">Delete file</string>
 </resources>
