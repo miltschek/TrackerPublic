@@ -39,6 +39,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -94,6 +95,9 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
 
     private static final String PREFERENCES_ADDRESS = "address";
     private static final String PREFERENCES_PORT = "port";
+    private static final String PREFERENCES_SLACK_TOKEN = "slack_token";
+    private static final String PREFERENCES_SLACK_CHANNEL = "slack_channel";
+    private static final String PREFERENCES_SLACK_REPORTING = "slack_reporting";
 
     private Intent sensorCollectorIntent;
     private ViewPager mPager;
@@ -107,8 +111,17 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
     private XYGraphView.XYData mHeartRateGraph;
 
     private View mSettingsView;
-    private Switch mSwitchHeartRate, mSwitchStepsCounter, mSwitchGeoLocation, mSwitchGeoAlwaysOn, mSwitchAirPressure, mSwitchDisplayOn;
-    private EditText mAddress, mPort;
+    private Switch mSwitchHeartRate,
+            mSwitchStepsCounter,
+            mSwitchGeoLocation,
+            mSwitchGeoAlwaysOn,
+            mSwitchAirPressure,
+            mSwitchDisplayOn,
+            mSwitchSlackReporting;
+    private EditText mAddress,
+            mPort,
+            mSlackToken,
+            mSlackChannel;
 
     private View mFilesView;
     private RecyclerView mFileList;
@@ -141,6 +154,9 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
         mSwitchDisplayOn = mSettingsView.findViewById(R.id.switchDisplayOn);
         mAddress = mSettingsView.findViewById(R.id.editTextAddress);
         mPort = mSettingsView.findViewById(R.id.editTextPort);
+        mSlackToken = mSettingsView.findViewById(R.id.editTextSlackToken);
+        mSlackChannel = mSettingsView.findViewById(R.id.editTextSlackChannel);
+        mSwitchSlackReporting = mSettingsView.findViewById(R.id.switchSlackReporting);
 
         final SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         mSwitchHeartRate.setChecked(preferences.getBoolean(PREFERENCES_HEART_SENSOR, true));
@@ -149,6 +165,7 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
         // todo: still buggy, not to be presented
         // mSwitchGeoAlwaysOn.setChecked(preferences.getBoolean(PREFERENCES_GEO_ALWAYS_ON, false));
         mSwitchAirPressure.setChecked(preferences.getBoolean(PREFERENCES_AIR_PRESSURE_SENSOR, false));
+        mSwitchSlackReporting.setChecked(preferences.getBoolean(PREFERENCES_SLACK_REPORTING, false));
 
         // todo: rethink this feature
         // mSwitchDisplayOn.setChecked(preferences.getBoolean(PREFERENCES_DISPLAY_ALWAYS_ON, false));
@@ -189,8 +206,39 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
             }
         });
 
+        // handle slack reporting switch
+        // try to send a message when switched on
+        // failed trial moves the switch back to the 'off' position
+        mSwitchSlackReporting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(PREFERENCES_SLACK_REPORTING, mSwitchSlackReporting.isChecked());
+                editor.apply();
+
+                if (mSwitchSlackReporting.isChecked()) {
+                    new AsyncSlackReporter(new Consumer<AsyncResult>() {
+                        @Override
+                        public void accept(AsyncResult asyncResult) {
+                            Toast.makeText(StopWatchActivity.this,
+                                    asyncResult.isSuccess() ? "Slack active." : asyncResult.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                            if (!asyncResult.isSuccess()) {
+                                mSwitchSlackReporting.setChecked(false);
+                            }
+                        }
+                    }).execute(new SlackReport(mSlackToken.getText().toString(),
+                            mSlackChannel.getText().toString(),
+                            ":wave: Tracker has been configured to send sport activity notifications to this Slack channel."));
+                }
+            }
+        });
+
         mAddress.setText(preferences.getString(PREFERENCES_ADDRESS, "foo.bar.com"));
         mPort.setText(preferences.getString(PREFERENCES_PORT, "8080"));
+        mSlackToken.setText(preferences.getString(PREFERENCES_SLACK_TOKEN, "xoxb-"));
+        mSlackChannel.setText(preferences.getString(PREFERENCES_SLACK_CHANNEL, "#random"));
+
         mAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -224,6 +272,42 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
             public void afterTextChanged(Editable s) {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString(PREFERENCES_PORT, mPort.getText().toString());
+                editor.apply();
+            }
+        });
+        mSlackToken.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(PREFERENCES_SLACK_TOKEN, mSlackToken.getText().toString());
+                editor.apply();
+            }
+        });
+        mSlackChannel.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(PREFERENCES_SLACK_CHANNEL, mSlackChannel.getText().toString());
                 editor.apply();
             }
         });
@@ -266,7 +350,6 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
         mFileItemAdapter.setRequestListener(new FileItemAdapter.RequestListener() {
             @Override
             public void onRequest(String fileName) {
-                // todo send the file to a configured address/port
                 try {
                     new AsyncUploader(new Consumer<Integer>() {
                         @Override
@@ -364,6 +447,8 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
 
     private Collection<HeartRateSensorData> heartRateData = new ArrayList<>();
 
+    private long lastSlackReport = 0;
+
     private final Runnable mDataForwarderTask = new Runnable() {
         int test = 0;
         @Override
@@ -400,9 +485,49 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
                 float minutes = (mSensorReadout.getSportActivityDurationNs() / 1000L / 1000L / 1000L) / 60f;
                 int minutesInt = (int)minutes;
                 int secondsInt = (int)((minutes - minutesInt) * 60);
-                mBigDisplayText.setText(String.format("%02d:%02d", minutesInt, secondsInt));
+                String activityTimeFormatted = String.format("%02d:%02d", minutesInt, secondsInt);
+                mBigDisplayText.setText(activityTimeFormatted);
 
                 mMeterView.setValue(mHeartRateGraph.getLastValue() / 200f);
+
+                long currentTime = SystemClock.elapsedRealtime();
+                if (mSensorReadout.isSportActivityRunning() && mSwitchSlackReporting.isChecked() && lastSlackReport < currentTime - 30000) {
+                    lastSlackReport = currentTime;
+
+                    GeoLocationData location = mSensorReadout.getLastLocation();
+                    String locationAge;
+                    if (location != null) {
+                        float ageMinutes = (SystemClock.elapsedRealtimeNanos() - location.getTimestamp()) / 1000f / 1000f / 1000f / 60f;
+                        if (ageMinutes < 1) {
+                            locationAge = "";
+                        } else {
+                            locationAge = "(" + String.valueOf(ageMinutes) + "min ago) ";
+                        }
+                    } else {
+                        locationAge = "";
+                    }
+
+                    int steps = mSensorReadout.getTotalStepsCount();
+                    float avgSpeed = mSensorReadout.getAvgSpeed();
+                    int heartRate = mSensorReadout.getHeartRate();
+
+                    String message = activityTimeFormatted + "\r\n"
+                            + (steps > 0 ? "Total steps " + steps + "\r\n" : "")
+                            + (avgSpeed > 0 ? "Average speed " + avgSpeed + "\r\n" : "")
+                            + (heartRate > 0 ? "Current heart rate " + heartRate + "\r\n" : "")
+                            + "Number of GNSS satellites " + mSensorReadout.getBestSatellitesCount() + "\r\n"
+                            + "Location " + ((location == null) ? "unknown" :
+                                (locationAge
+                                        + "<https://www.google.com/maps/search/?api=1&query="
+                                        + location.getLocation().getLatitude() + ","
+                                        + location.getLocation().getLongitude() + "|maps>"
+                                        + " +-" + location.getLocation().getAccuracy() + "m"));
+
+                    new AsyncSlackReporter(null).execute(
+                            new SlackReport(mSlackToken.getText().toString(),
+                                    mSlackChannel.getText().toString(),
+                                    message));
+                }
             }
             StopWatchActivity.this.mDataForwarderHandler.postDelayed(mDataForwarderTask, REFRESH_INTERVAL_MS);
         }
@@ -479,8 +604,20 @@ public class StopWatchActivity extends FragmentActivity implements IDataListener
 
         if (!mStartStopButton.isChecked() && isRunning) {
             onStopSport(view);
+
+            if (mSwitchSlackReporting.isChecked()) {
+                new AsyncSlackReporter(null).execute(new SlackReport(mSlackToken.getText().toString(),
+                        mSlackChannel.getText().toString(),
+                        ":house: Sport activity finished."));
+            }
         } else if (mStartStopButton.isChecked() && !isRunning) {
             onStartSport(view);
+
+            if (mSwitchSlackReporting.isChecked()) {
+                new AsyncSlackReporter(null).execute(new SlackReport(mSlackToken.getText().toString(),
+                        mSlackChannel.getText().toString(),
+                        ":running: Sport activity started."));
+            }
         } else {
             // desync between the button and the sport activity ("it should never happen")
             Log.e(TAG, "Button/SportActivity desync.");

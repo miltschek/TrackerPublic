@@ -44,6 +44,10 @@ public class SensorCollector extends Service implements ISensorReadout, ISensorC
     private boolean mGeoLocationShouldBeActive = false, mIsGeoLocationActive = false, mIsGeoLocationRecorded = false;
     private long startTime, startTimeRtc, stopTime, stopTimeRtc;
 
+    private HeartRateSensorData lastHeartRateData;
+    private StepCounterSensorData lastStepCounterData;
+    private GeoLocationData lastGeoLocationData;
+
     public SensorCollector() {
         Log.d(TAG, "Creating a new instance " + hashCode());
     }
@@ -329,6 +333,27 @@ public class SensorCollector extends Service implements ISensorReadout, ISensorC
         return gnssStatusCallback.getBestSatellitesCount();
     }
 
+    @Override
+    public int getHeartRate() {
+        HeartRateSensorData data = lastHeartRateData;
+        if (data == null || data.getTimestamp() < SystemClock.elapsedRealtimeNanos() - MAX_HEART_RATE_AGE_NS) {
+            return -1;
+        } else {
+            return data.getHeartRate();
+        }
+    }
+
+    @Override
+    public int getTotalStepsCount() {
+        StepCounterSensorData data = lastStepCounterData;
+        return data == null ? -1 : data.getStepsCount();
+    }
+
+    @Override
+    public GeoLocationData getLastLocation() {
+        return lastGeoLocationData;
+    }
+
     // ISensorConsumer
 
     @Override
@@ -343,6 +368,8 @@ public class SensorCollector extends Service implements ISensorReadout, ISensorC
                     listener.onDataReceived(data);
                 }
             }
+
+            lastHeartRateData = (HeartRateSensorData)data;
         } else if (data instanceof StepCounterSensorData) {
             synchronized (stepData) {
                 stepData.add((StepCounterSensorData)data);
@@ -353,6 +380,8 @@ public class SensorCollector extends Service implements ISensorReadout, ISensorC
                     listener.onDataReceived(data);
                 }
             }
+
+            lastStepCounterData = (StepCounterSensorData)data;
         } else if (data instanceof GeoLocationData) {
             if (mIsGeoLocationRecorded) {
                 synchronized (geoLocationData) {
@@ -365,6 +394,8 @@ public class SensorCollector extends Service implements ISensorReadout, ISensorC
                     listener.onDataReceived(data);
                 }
             }
+
+            lastGeoLocationData = (GeoLocationData)data;
         } else if (data instanceof PressureSensorData) {
             synchronized (pressureData) {
                 pressureData.add((PressureSensorData)data);
