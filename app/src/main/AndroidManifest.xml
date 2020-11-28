@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature android:name="android.hardware.type.watch" />
+    <uses-feature android:name="android.sensor.heart_rate" />
+    <uses-feature android:name="android.sensor.step_counter" />
+    <uses-feature android:name="android.sensor.pressure" />
+    <uses-feature android:name="android.hardware.location.gps" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
