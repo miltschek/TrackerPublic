@@ -111,3 +111,8 @@ Usage:
 - output file: CSV (name and location queried in the dialog)
 - short summary is printed out in the console
 - please note: the CSV file will be generated accordingly to the current formatting locale settings of the host; depending on the language version of your Excel, it expects either a dot or a comma as a decimal separator
+
+Blog
+====
+
+More on https://krzsztf.wordpress.com/
