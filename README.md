@@ -5,6 +5,8 @@ Tracker is an Android Wear (WearOS) app for recording sport activities, mostly j
 
 ![Main Screen](Screenshots/device-2020-08-16-155128.png)
 
+:scream: Can't get into the Google Play Store - please help anyone - [read below](#google).
+
 Features
 --------
 - No cloud!
@@ -111,6 +113,29 @@ Usage:
 - output file: CSV (name and location queried in the dialog)
 - short summary is printed out in the console
 - please note: the CSV file will be generated accordingly to the current formatting locale settings of the host; depending on the language version of your Excel, it expects either a dot or a comma as a decimal separator
+
+Google Play Store
+=================
+<a name="google"></a>
+I'm struggling with the process of publishing the app to the Google Play Store. First, it did get rejected because of display issues - corrected. Now, it still gets rejected with the following message:
+> For example, your application does not provide user speed and altitude data as shown/described on the store listing.
+1. I've limited the number of compatible devices to only those, that do really contain the needed hardware. My goal is to offer the app to anyone, doesn't matter if the watch does have a barometer or not. But just to be sure, this is not the reason.
+2. I've edited the store listing to make it clear, what is shown, what is recorded to a file (for futher analysis) and what is optional (depends on the sensors).
+Maybe one can help me figure it out, since contacting Google is like talking to a robot :disappointed: :
+> Thanks for contacting the Google Play (...) For example, your application does not provide user speed and altitude data as shown/described on the store listing.
+
+The store listing as of now says:
+> A minimalistic Wear OS jogging tracker app for everyone, who wants to analyze the real sensor data by her/himself.
+> Built-in functions:
+> - Time measurement (pretty obvious :))
+> - If your watch can measure your heart rate: the current rate is graphically shown around the watch face. The measurements history is shown as a bar graph. An average rate is shown numerically.
+> - If your watch is equipped with GNSS sensor (e.g. GPS, Galileo, Glonass, Beidou), the reception status is shown as an icon (dark grey for none satellites in range, red for 1 satellite, magenta for 2 satellites, yellow for 3 or more satellites still without a fix and - finally - a white symbol when a position is available).
+> - All sensor data is stored to a file on the watch and presented in a short form as a file list (the end-time and the length of the activity, the size of the file and a summary of collected data if it was available from the watch: average heart rate, maximum heart rate, steps count and average steps per minute, average speed - only if available from the GNSS).
+> - Individual sensor readings are stored in the file (depending on the hardware support: heart rate, steps count, geographical location, air pressure) and NOT viewable within the app directly.
+> - Individual sensors can be activated or deactivated before a sport activity is started.
+> - Possible to get short reports on Slack channel (start, stop and current state when the display is on, max every 30 seconds).
+> - The files can be transmitted to a PC over a simple TCP socket and converted to KML or CSV files; the individual values are NOT displayed live by the app. The receiving PC must be accessible via a public IP address, if the watch is sharing the network of your smartphone via Bluetooth.
+> External tool (open source and free of charge) can be used to convert the file to a KML (recorded path) and/or to a CSV (all sensor readings along the sport activity) - see the app's GitHub project.
 
 Blog
 ====
