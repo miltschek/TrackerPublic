@@ -140,4 +140,4 @@ The store listing as of now says:
 Blog
 ====
 
-More on https://krzsztf.wordpress.com/
+More on https://miltschek.de/
